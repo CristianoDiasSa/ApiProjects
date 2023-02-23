@@ -1,7 +1,7 @@
 {
-  "name": "fcc-api-projects-boilerplate",
+  "name": "fcc-api-development-app",
   "version": "0.0.1",
-  "description": "An FCC Backend Challenge",
+  "description": "FCC projects for backend and API development certification",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/freeCodeCamp/boilerplate-project-timestamp.git"
+    "url": "https://github.com/CristianoDiasSa/ApiProjects.git"
   },
   "bugs": {
     "url": "https://github.com/freeCodeCamp/freeCodeCamp/issues"
