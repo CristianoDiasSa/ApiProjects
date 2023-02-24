@@ -44,9 +44,10 @@ let date = new Date(dateString);
 // thinking of that, we create this if statement checking against 10000, which will only be true for int values parsed from unix formats 
 // for a very long time and then we give the json object as the response.
 if (parseInt(dateString)> 10000){
+  let date = new Date(parseInt(dateString));
   res.json({
     "unix" : dateString,
-    "utc" : new Date(parseInt(dateString)),
+    "utc" : date.toUTCString()
   });
 };
 // Here we work with the invalid date passeed as an argument, as everything apart from a valid date format will be invalid, 
