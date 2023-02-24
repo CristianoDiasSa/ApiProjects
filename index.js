@@ -46,7 +46,7 @@ let date = new Date(dateString);
 if (parseInt(dateString)> 10000){
   let date = new Date(parseInt(dateString));
   res.json({
-    "unix" : dateString,
+    "unix" : parseInt(dateString),
     "utc" : date.toUTCString()
   });
 };
