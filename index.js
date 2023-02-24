@@ -16,7 +16,7 @@ app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/views/index.html');
 });
 
 
@@ -26,8 +26,7 @@ app.get("/api/hello", function (req, res) {
 });
 
 // If the request is passed with a empty string as argument, it should return today's date
-
-app.get('/api/timestamp', (req, res)=>{
+app.get('/api/timestamp/', (req, res)=>{
   let date = new Date();
   res.json({
     "unix" : date.getTime() ,
@@ -37,7 +36,7 @@ app.get('/api/timestamp', (req, res)=>{
 
 // Here is where the fun begins - Timestamp API
  
-app.get("/api/:date_string", (req, res)=>{
+app.get("/api/timestamp/:date_string", (req, res)=>{
 // Firstly, we get the date value from the request and store it in a variable and create a new date variable as well
 let dateString = req.params.date_string;
 let date = new Date(dateString);
