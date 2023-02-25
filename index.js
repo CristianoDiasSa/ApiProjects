@@ -5,6 +5,7 @@
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 3000;
+app.set('trust proxy', true);
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -18,17 +19,31 @@ app.use(express.static('public'));
 app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
-// Timestamp api html
+
+
+// Timestamp api html endpoint
 app.get("/timestamp", function (req, res) {
   res.sendFile(__dirname + '/views/timestamp.html');
 });
 
-
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get("/headerParser", function (req, res) {
+  res.sendFile(__dirname + '/views/headerParser.html');
 });
 
+//---------------------------------------------------------------------------------------------------------------------------------------
+// Start of who am I API
+app.get("/api/whoami", (req, res)=>{
+  res.json({
+    "ipadress":  req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+    "language" : req.headers["accept-language"],
+    "software" : req.headers["user-agent"],
+  });
+})
+
+//End of Who am I API
+
+//--------------------------------------------------------------------------------------------------------------------------------
+// Start of Timestamp API
 // If the request is passed with a empty string as argument, it should return today's date
 app.get('/api/', (req, res)=>{
   let date = new Date();
@@ -37,8 +52,7 @@ app.get('/api/', (req, res)=>{
     "utc" : date.toUTCString()
   });
 });
-
-// Here is where the fun begins - Timestamp API
+// Request with date input
 app.get("/api/:date_string", (req, res)=>{
 // Firstly, we get the date value from the request and store it in a variable and create a new date variable as well
 let dateString = req.params.date_string;
@@ -68,8 +82,7 @@ if(date == "Invalid Date"){
   });
 };
 });
-
-
+//---------------------------------------------------------------------------------------------------------------------------------------
 
 // listen for requests :)
 var listener = app.listen(port, function () {
