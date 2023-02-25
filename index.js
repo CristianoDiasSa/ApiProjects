@@ -34,7 +34,7 @@ app.get("/headerParser", function (req, res) {
 // Start of who am I API
 app.get("/api/whoami", (req, res)=>{
   res.json({
-    "ipadress":  req.socket.remoteAddress,
+    "ipaddress":  req.socket.remoteAddress,
     "language" : req.headers["accept-language"],
     "software" : req.headers["user-agent"],
   });
