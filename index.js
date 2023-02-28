@@ -1,11 +1,21 @@
+const MONGO_URI ='mongodb+srv://Cristiano:123@freecodecamptutorial.41hzsrf.mongodb.net/?retryWrites=true&w=majority';
 // index.js
 // where your node app starts
 
 // init project
 var express = require('express');
 var app = express();
+var mongoose = require('mongoose');
+var mongo = require('mongodb');
+var bodyParser = require('body-parser');
 var port = process.env.PORT || 3000;
 app.set('trust proxy', true);
+
+//This connection will go when deployed
+//mongoose.connect(process.env.MONGO_URI);
+
+//This connection is for local testing
+mongoose.connect(MONGO_URI);
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -28,6 +38,10 @@ app.get("/timestamp", function (req, res) {
 
 app.get("/headerParser", function (req, res) {
   res.sendFile(__dirname + '/views/headerParser.html');
+});
+
+app.get("/urlShortener", function (req, res) {
+  res.sendFile(__dirname + '/views/urlShortener.html');
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------------
@@ -84,7 +98,19 @@ if(date == "Invalid Date"){
 };
 });
 //---------------------------------------------------------------------------------------------------------------------------------------
+// Url Shortener API
+// Mounting body-parser
+var jsonParser = bodyParser.json();
+// Post request
+app.post("/api/shorturl", jsonParser, (req, res)=>{
+  res.json({
+    'success': 'Url processed succesfully!'
+  });
 
+});
+
+// End of url shortener API
+//---------------------------------------------------------------------------------------------------------------------------------------
 // listen for requests :)
 var listener = app.listen(port, function () {
   console.log('Your app is listening on port ' + listener.address().port);
