@@ -13,14 +13,14 @@ var port = process.env.PORT || 3000;
 var app = express();
 
 //This connection will go when deployed
-mongoose.connect(process.env.MONGO_URI);
-/*
+//mongoose.connect(process.env.MONGO_URI);
+
 //This connection is for local testing
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-*/
+
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
 var cors = require("cors");
