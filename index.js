@@ -1,14 +1,10 @@
-const MONGO_URI =
-  "mongodb+srv://Cristiano:123@freecodecamptutorial.41hzsrf.mongodb.net/?retryWrites=true&w=majority";
 // index.js
 // where your node app starts
 
 // init project
 var express = require("express");
-var shortId = require("shortid");
 var mongoose = require("mongoose");
 var mongo = require("mongodb");
-var bodyParser = require("body-parser");
 var port = process.env.PORT || 3000;
 var app = express();
 
@@ -16,14 +12,11 @@ var app = express();
 //mongoose.connect(process.env.MONGO_URI);
 
 //This connection is for local testing
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
 var cors = require("cors");
+app.use(express.urlencoded({ extended: true }));
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -49,45 +42,42 @@ app.get("/urlShortener", function (req, res) {
 
 //---------------------------------------------------------------------------------------------------------------------------------------
 // Url Shortener API
-// Create schema and model to store urls
-let ShortUrl = mongoose.model(
-  "ShortUrl",
-  new mongoose.Schema({
-    original_url: String,
-    short_url: String,
-    id: String,
-  })
-);
-// Mounting body-parser
-app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
-app.use(bodyParser.json());
-// Post request
-app.post("/api/shorturl/", (req, res) => {
-  let original_url = req.body.url;
-  let url_id = shortId.generate();
-  let newShortUrl = url_id;
 
-  let newUrl = new ShortUrl({
-    original_url: original_url,
-    short_url: __dirname + "/api/shorturl/" + url_id,
-    id: url_id,
-  });
-  newUrl.save(function (error, done) {
-    if (error) return console.log(error);
-    res.json({
-      original_url: newUrl.original_url,
-      short_url: newUrl.short_url,
+originalUrls = [];
+shortUrls = [];
+app.post("/api/shorturl", (req, res) => {
+  let url = req.body.url;
+  let foundIndex = originalUrls.indexOf(url);
+
+  if (!url.includes("https://") && !url.includes("http://")) {
+    return res.json({
+      error: "Invalid Url",
     });
+  }
+
+  if (foundIndex < 0) {
+    originalUrls.push(url);
+    shortUrls.push(shortUrls.length);
+    return res.json({
+      original_url: url,
+      short_url: shortUrls.length - 1,
+    });
+  }
+  return res.json({
+    original_url: url,
+    short_url: shortUrls[foundIndex],
   });
 });
 
-app.get("/api/shorturl/:id", (req, res) => {
-  let userGeneratedShortUrl = req.params.id;
-  ShortUrl.find({ id: userGeneratedShortUrl }).then(function (foundUrls) {
-    let urlForRedirect = foundUrls[0];
-    res.redirect(urlForRedirect.original_url);
-  });
+app.get("/api/shorturl/:shorturl", (req, res) => {
+  let shortUrl = parseInt(req.params.shorturl);
+  let foundIndex = shortUrls.indexOf(shortUrl);
+  if (foundIndex < 0) {
+    return res.json({
+      error: "No such url was found!",
+    });
+  }
+  res.redirect(originalUrls[foundIndex]);
 });
 
 // End of url shortener API
