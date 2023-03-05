@@ -48,6 +48,52 @@ app.get("/urlShortener", function (req, res) {
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------------
+// Url Shortener API
+// Create schema and model to store urls
+let ShortUrl = mongoose.model(
+  "ShortUrl",
+  new mongoose.Schema({
+    original_url: String,
+    short_url: String,
+    id: String,
+  })
+);
+// Mounting body-parser
+app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/json
+app.use(bodyParser.json());
+// Post request
+app.post("/api/shorturl/", (req, res) => {
+  let original_url = req.body.url;
+  let url_id = shortId.generate();
+  let newShortUrl = url_id;
+
+  let newUrl = new ShortUrl({
+    original_url: original_url,
+    short_url: __dirname + "/api/shorturl/" + url_id,
+    id: url_id,
+  });
+  newUrl.save(function (error, done) {
+    if (error) return console.log(error);
+    res.json({
+      original_url: newUrl.original_url,
+      short_url: newUrl.short_url,
+    });
+  });
+});
+
+app.get("/api/shorturl/:id", (req, res) => {
+  let userGeneratedShortUrl = req.params.id;
+  ShortUrl.find({ id: userGeneratedShortUrl }).then(function (foundUrls) {
+    let urlForRedirect = foundUrls[0];
+    res.redirect(urlForRedirect.original_url);
+  });
+});
+
+// End of url shortener API
+//---------------------------------------------------------------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------------------------------------------------------
 // Start of who am I API
 app.get("/api/whoami", (req, res) => {
   res.json({
@@ -100,51 +146,7 @@ app.get("/api/:date_string", (req, res) => {
     });
   }
 });
-//---------------------------------------------------------------------------------------------------------------------------------------
-// Url Shortener API
-// Create schema and model to store urls
-let ShortUrl = mongoose.model(
-  "ShortUrl",
-  new mongoose.Schema({
-    original_url: String,
-    short_url: String,
-    id: String,
-  })
-);
-// Mounting body-parser
-app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
-app.use(bodyParser.json());
-// Post request
-app.post("/api/shorturl/", (req, res) => {
-  let original_url = req.body.url;
-  let url_id = shortId.generate();
-  let newShortUrl = url_id;
 
-  let newUrl = new ShortUrl({
-    original_url: original_url,
-    short_url: __dirname + "/api/shorturl/" + url_id,
-    id: url_id,
-  });
-  newUrl.save(function (error, done) {
-    if (error) return console.log(error);
-    res.json({
-      original_url: newUrl.original_url,
-      short_url: newUrl.short_url,
-    });
-  });
-});
-
-app.get("/api/shorturl/:id", (req, res) => {
-  let userGeneratedShortUrl = req.params.id;
-  ShortUrl.find({ id: userGeneratedShortUrl }).then(function (foundUrls) {
-    let urlForRedirect = foundUrls[0];
-    res.redirect(urlForRedirect.original_url);
-  });
-});
-
-// End of url shortener API
-//---------------------------------------------------------------------------------------------------------------------------------------
 // listen for requests :)
 var listener = app.listen(port, function () {
   console.log("Your app is listening on port " + listener.address().port);
