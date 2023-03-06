@@ -31,15 +31,18 @@ app.get("/", function (req, res) {
 app.get("/timestamp", function (req, res) {
   res.sendFile(__dirname + "/views/timestamp.html");
 });
-
+// HeaderParser api html endpoint
 app.get("/headerParser", function (req, res) {
   res.sendFile(__dirname + "/views/headerParser.html");
 });
-
+// UrlShortener api html endpoint
 app.get("/urlShortener", function (req, res) {
   res.sendFile(__dirname + "/views/urlShortener.html");
 });
-
+// Exercise Tracker api html endpoint
+app.get("/exerciseTracker", function (req, res) {
+  res.sendFile(__dirname + "/views/exerciseTracker.html");
+});
 //---------------------------------------------------------------------------------------------------------------------------------------
 // Url Shortener API
 
