@@ -79,7 +79,7 @@ const exerciseSchema = mongoose.Schema(
     username: String,
     description: String,
     duration: Number,
-    date: String,
+    date: Date,
     userId: String,
   },
   { versionKey: false }
@@ -128,34 +128,51 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
     username: foundUser.username,
     description,
     duration,
-    date,
+    date: date.toDateString(),
     userId: userId,
   });
-
   // This is the response
   res.json({
     username: foundUser.username,
-    description,
-    duration,
+    description: description,
+    duration: duration,
     date: date.toDateString(),
-    _id: userId,
+    _id: foundUser._id,
   });
 });
 // GET request to /api/users/:_id/logs
 app.get("/api/users/:_id/logs", async (req, res) => {
+  // We need this values to narrow our search when needed.
+  let { from, to, limit } = req.query;
   const userId = req.params._id;
   let foundUser = await User.findById(userId);
   if (!foundUser) {
     res.json({ Message: "No username found!" });
   }
+
+  let filter = { userId };
+  let dateFilter = {};
+  if (from) {
+    dateFilter["$gte"] = new Date(from);
+  }
+  if (to) {
+    dateFilter["$lte"] = new Date(to);
+  }
+  if (from || to) {
+    filter.date = dateFilter;
+  }
+  if (!limit) {
+    limit = 10;
+  }
+
   // Here we look for all documents linked to that userId
-  let exercises = await Exercise.find({ userId });
+  let exercises = await Exercise.find(filter).limit(limit);
   // Here we are just excluding the fields we dont want to send back to user
   exercises = exercises.map((exercise) => {
     return {
       description: exercise.description,
       duration: exercise.duration,
-      date: exercise.date,
+      date: exercise.date.toDateString(),
     };
   });
   // Here we set our response object
@@ -163,7 +180,7 @@ app.get("/api/users/:_id/logs", async (req, res) => {
     username: foundUser.username,
     count: exercises.length,
     _id: userId,
-    logs: exercises,
+    log: exercises,
   });
 });
 // End of exercise tracker API
