@@ -7,7 +7,10 @@ var mongoose = require("mongoose");
 var mongo = require("mongodb");
 var port = process.env.PORT || 3000;
 var app = express();
+var multer = require("multer");
 require("dotenv").config();
+// Here we set the destination of the uploaded files for uploading API
+const uploads = multer({ dest: "./public/data/uploads" });
 
 //This is the database connection for APIs that requires a database, like exercise Tracking API
 mongoose.connect(
@@ -55,7 +58,19 @@ app.get("/headerParser", function (req, res) {
 app.get("/timestamp", function (req, res) {
   res.sendFile(__dirname + "/views/timestamp.html");
 });
+app.get("/metaData", function (req, res) {
+  res.sendFile(__dirname + "/views/metaData.html");
+});
 
+//---------------------------------------------------------------------------------------------------------------------------------------
+// Metadata uploader API
+app.post("/api/fileanalyse", uploads.single("upfile"), (req, res) => {
+  res.json({
+    name: req.file.originalname,
+    type: req.file.mimetype,
+    size: req.file.size,
+  });
+});
 //---------------------------------------------------------------------------------------------------------------------------------------
 // Exercise Tracker API
 // Firstly we create a mongoose schema to hold the structure that we need, in this case only username will be required
