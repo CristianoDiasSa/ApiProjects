@@ -65,12 +65,9 @@ app.get("/metaData", function (req, res) {
 //---------------------------------------------------------------------------------------------------------------------------------------
 // Metadata uploader API
 app.post("/api/fileanalyse", upload.single("upfile"), (req, res, next) => {
-  console.log(req, "here is req");
-  console.log(req.file, "here is req.file");
   const fileName = req.file.originalname;
   const type = req.file.mimetype;
   const size = req.file.size;
-  console.log(fileName, type, size);
   res.json({
     name: fileName,
     type: type,
