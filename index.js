@@ -10,7 +10,7 @@ var app = express();
 var multer = require("multer");
 require("dotenv").config();
 // Here we set the destination of the uploaded files for uploading API
-const uploads = multer({ dest: "./public/data/uploads" });
+const upload = multer({ dest: "./public/data/uploads" });
 
 //This is the database connection for APIs that requires a database, like exercise Tracking API
 mongoose.connect(
@@ -64,11 +64,17 @@ app.get("/metaData", function (req, res) {
 
 //---------------------------------------------------------------------------------------------------------------------------------------
 // Metadata uploader API
-app.post("/api/fileanalyse", uploads.single("upfile"), (req, res) => {
+app.post("/api/fileanalyse", upload.single("upfile"), (req, res, next) => {
+  console.log(req, "here is req");
+  console.log(req.file, "here is req.file");
+  const fileName = req.file.originalname;
+  const type = req.file.mimetype;
+  const size = req.file.size;
+  console.log(fileName, type, size);
   res.json({
-    name: req.file.originalname,
-    type: req.file.mimetype,
-    size: req.file.size,
+    name: fileName,
+    type: type,
+    size: size,
   });
 });
 //---------------------------------------------------------------------------------------------------------------------------------------
